@@ -93,10 +93,10 @@ class Examples:
         if isinstance(obj, list):
             return cls(data=obj, nway=nway)
 
-        # if type(obj) is cls:
-        if isinstance(obj, cls):
+        if type(obj) is cls:
+        # if isinstance(obj, cls):
             # assert nway is None, nway
-            assert obj.nway == nway, nway
+            # assert obj.nway == nway, nway
             return obj
 
         assert False, f"obj has type {type(obj)} which is not compatible with cast()"

@@ -1,0 +1,9 @@
+[Jan 21, 18:55:18] Use IRDS:neumarco/zh/train for queries
+[Jan 21, 18:55:21] Use IRDS:neumarco/zh/train for docs
+[Jan 21, 18:55:21] Use local file:/home/jju/datasets/hltcoe/t53b-monot5-msmarco-engeng.sample.jsonl for docpairs
+>>> Loading /home/jju/datasets/hltcoe/t53b-monot5-msmarco-engeng.sample.jsonl
+0M  --> Took 0.7481 secs, 0.0748 ms/doc
+#> Starting...
+nranks = 1 	 num_gpus = 1 	 device=0
+Using config.bsize = 8 (per process) and config.accumsteps = 1
+[Jan 21, 18:55:35] [0] 		 Loading model xlm-roberta-large...

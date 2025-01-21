@@ -27,8 +27,8 @@ def train(config: ColBERTConfig, triples, queries=None, collection=None):
     else: 
         config.checkpoint = config.checkpoint or config.model_name
 
-    if config.rank < 1:
-        config.help()
+    # if config.rank < 1: # [BUG] WHY need this ?
+    #     config.help()
 
     random.seed(12345)
     np.random.seed(12345)
