@@ -16,9 +16,9 @@ cd ~/ColBERT-X
 
 python -m colbert.scripts.train \
 --model_name xlm-roberta-large \
---training_triples /home/jju/datasets/hltcoe/t53b-monot5-msmarco-engeng.sample.jsonl \
+--training_triples /home/jju/datasets/hltcoe/t53b-monot5-msmarco-engeng.jsonl \
 --training_irds_id neumarco/zh/train \
---maxsteps 100 \
+--maxsteps 200000 \
 --learning_rate 5e-6 \
 --kd_loss KLD \
 --only_top \
