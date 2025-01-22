@@ -82,6 +82,7 @@ def class_factory(name_or_path):
         raise ValueError("Could not find correct model class for the model type {model_type} in transformers library")
 
 
+    # [modified]
     class HF_ColBERT(pretrained_class_object):
         """
             Shallow wrapper around HuggingFace transformers. All new parameters should be defined at this level.
@@ -90,7 +91,12 @@ def class_factory(name_or_path):
         """
         _keys_to_ignore_on_load_unexpected = [r"cls"]
 
-        def __init__(self, config, colbert_config):
+        def __init__(self, config, colbert_config, lite_encoder=False):
+
+            if lite_encoder:
+                config.num_hidden_layers = colbert_config.lite_num_hidden_layers
+                config.num_attention_heads = colbert_config.lite_num_attention_heads
+
             super().__init__(config)
 
             self.config = config
@@ -113,8 +119,9 @@ def class_factory(name_or_path):
             return getattr(self, base_model_prefix)
 
 
+        # [modified]
         @classmethod
-        def from_pretrained(cls, name_or_path, colbert_config: ColBERTConfig):
+        def from_pretrained(cls, name_or_path, colbert_config: ColBERTConfig, lite_encoder: bool = False):
             if name_or_path.endswith('.dnn'):
                 dnn = torch_load_dnn(name_or_path)
                 base = dnn.get('arguments', {}).get('model', colbert_config.model_name)
@@ -135,7 +142,7 @@ def class_factory(name_or_path):
 
                 return obj
 
-            obj = super().from_pretrained(name_or_path, colbert_config=colbert_config)
+            obj = super().from_pretrained(name_or_path, colbert_config=colbert_config, lite_encoder=lite_encoder)
             obj.base = name_or_path
 
             tok = cls.raw_tokenizer_from_pretrained(name_or_path, colbert_config)
