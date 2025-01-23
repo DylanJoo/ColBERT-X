@@ -12,4 +12,4 @@
 conda activate plaid
 
 python -m colbert.scripts.collection_utils create_passage_collection \
---root /home/jju/datasets/neuclir --corpus neuclir/neuclir1:data/zho-00000-of-00001.jsonl.gz
+--root /home/jju/datasets/neuclir1 --corpus neuclir/neuclir1:data/zho-00000-of-00001.jsonl.gz
