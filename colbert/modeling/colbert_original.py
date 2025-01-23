@@ -1,7 +1,7 @@
 from colbert.infra.config.config import ColBERTConfig
 from colbert.search.strided_tensor import StridedTensor
 from colbert.utils.utils import print_message, flatten
-from colbert.modeling.base_colbert import BaseColBERTLite
+from colbert.modeling.base_colbert import BaseColBERT
 
 import torch
 import string
@@ -11,7 +11,7 @@ import pathlib
 from torch.utils.cpp_extension import load
 
 
-class ColBERTLiteQuery(BaseColBERTLite):
+class ColBERT(BaseColBERT):
     """
         This class handles the basic encoding and scoring operations in ColBERT. It is used for training.
     """
@@ -20,7 +20,7 @@ class ColBERTLiteQuery(BaseColBERTLite):
         super().__init__(name, colbert_config)
         self.use_gpu = colbert_config.total_visible_gpus > 0
 
-        ColBERTLiteQuery.try_load_torch_extensions(self.use_gpu)
+        ColBERT.try_load_torch_extensions(self.use_gpu)
 
         self.skiplist = {}
         if self.colbert_config.mask_punctuation:
@@ -107,7 +107,7 @@ class ColBERTLiteQuery(BaseColBERTLite):
 
     def query(self, input_ids, attention_mask):
         input_ids, attention_mask = input_ids.to(self.device), attention_mask.to(self.device)
-        Q = self.bert_lite(input_ids, attention_mask=attention_mask)[0]
+        Q = self.bert(input_ids, attention_mask=attention_mask)[0]
         Q = self.linear(Q)
 
         mask = torch.tensor(self.mask(input_ids, skiplist=[]), device=self.device).unsqueeze(2).float()

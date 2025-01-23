@@ -1,4 +1,3 @@
-conda activate plaid
 python -m colbert.scripts.train \
 --model_name xlm-roberta-large \
 --training_triples /home/jju/datasets/hltcoe/t53b-monot5-msmarco-engeng.sample.jsonl \
@@ -11,4 +10,4 @@ python -m colbert.scripts.train \
 --nway 6 \
 --run_tag test \
 --experiment test \
---other_args lite_query_encoder=True lite_num_hidden_layers=1 lite_num_attention_heads=1
+--other_args lite_query_encoder=False lite_document_encoder=False

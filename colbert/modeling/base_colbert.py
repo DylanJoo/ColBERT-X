@@ -27,7 +27,29 @@ class BaseColBERT(torch.nn.Module):
         self.name = self.colbert_config.model_name
         assert self.name is not None
         HF_ColBERT = class_factory(self.name)
-        self.model = HF_ColBERT.from_pretrained(name_or_path, colbert_config=self.colbert_config)
+
+        # [modified]
+        # (1) Both are lite arch. (2) One for each. (3) Both are full arch.
+        if (self.colbert_config.lite_query_encoder and self.colbert_config.lite_document_encoder): 
+            self.model = None
+            self.model_lite = HF_ColBERT.from_pretrained(
+                self.colbert_config.lite_encoder_init or name_or_path, colbert_config=self.colbert_config, lite_encoder=True
+            )
+        elif (self.colbert_config.lite_query_encoder != self.colbert_config.lite_document_encoder): 
+            self.model = HF_ColBERT.from_pretrained(name_or_path, colbert_config=self.colbert_config)
+            self.model_lite = HF_ColBERT.from_pretrained(
+                self.colbert_config.lite_encoder_init or name_or_path, colbert_config=self.colbert_config, lite_encoder=True
+            )
+        else: 
+            self.model = HF_ColBERT.from_pretrained(name_or_path, colbert_config=self.colbert_config)
+            self.model_lite = None
+
+        # [added]
+        if self.colbert_config.freeze_document_encoder:
+            for n, p in self.named_parameters():
+                if 'model_lite' not in n: # i.e., all have `model.xxx`
+                    p.requires_grad = False
+
         # self.raw_tokenizer = AutoTokenizer.from_pretrained(name_or_path)
         self.raw_tokenizer = HF_ColBERT.raw_tokenizer_from_pretrained(name_or_path, colbert_config=self.colbert_config)
 
@@ -40,6 +62,10 @@ class BaseColBERT(torch.nn.Module):
     @property
     def bert(self):
         return self.model.LM
+
+    @property
+    def bert_lite(self):
+        return self.model_lite.LM
 
     @property
     def linear(self):
@@ -56,7 +82,6 @@ class BaseColBERT(torch.nn.Module):
         self.raw_tokenizer.save_pretrained(path)
 
         self.colbert_config.save_for_checkpoint(path)
-
 
 if __name__ == '__main__':
     import random
@@ -112,33 +137,3 @@ if __name__ == '__main__':
     # print(dnn['model_state_dict']['bert.encoder.layer.10.attention.self.value.weight'])
 
     # # base_model_prefix
-
-# [added]
-class BaseColBERTLite(BaseColBERT):
-    """ The lite version uses separated query and document encoders. """
-
-    def __init__(self, name_or_path, colbert_config=None):
-        super().__init__(name_or_path, colbert_config)
-
-        Run().print(f"Loading model {name_or_path}...")
-
-        self.colbert_config = ColBERTConfig.from_existing(ColBERTConfig.load_from_checkpoint(name_or_path), colbert_config)
-        self.name = self.colbert_config.model_name
-        assert self.name is not None
-        HF_ColBERT = class_factory(self.name)
-        self.model = HF_ColBERT.from_pretrained(name_or_path, colbert_config=self.colbert_config)
-        self.model_lite = HF_ColBERT.from_pretrained(name_or_path, colbert_config=self.colbert_config, lite_encoder=True)
-        # self.raw_tokenizer = AutoTokenizer.from_pretrained(name_or_path)
-        self.raw_tokenizer = HF_ColBERT.raw_tokenizer_from_pretrained(name_or_path, colbert_config=self.colbert_config)
-
-        ### 
-        print(self.model.config)
-        print(self.model_lite.config)
-        exit(0)
-
-        self.eval()
-
-    @property
-    def bert_lite(self):
-        return self.model_lite.LM
-

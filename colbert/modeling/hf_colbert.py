@@ -118,7 +118,6 @@ def class_factory(name_or_path):
             base_model_prefix = getattr(self, "base_model_prefix")
             return getattr(self, base_model_prefix)
 
-
         # [modified]
         @classmethod
         def from_pretrained(cls, name_or_path, colbert_config: ColBERTConfig, lite_encoder: bool = False):

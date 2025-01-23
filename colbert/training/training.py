@@ -13,8 +13,7 @@ from colbert.utils.amp import MixedPrecisionManager
 from colbert.training.lazy_batcher import LazyBatcher, MultiLangBatcher
 from colbert.parameters import DEVICE
 
-# from colbert.modeling.colbert import ColBERT
-from colbert.modeling.colbert_lite import ColBERTLiteQuery # [replaced]
+from colbert.modeling.colbert import ColBERT
 from colbert.modeling.reranker.electra import ElectraReranker
 
 from colbert.utils.utils import print_message
@@ -23,7 +22,6 @@ from colbert.training.utils import print_progress, manage_checkpoints, find_last
 
 
 def train(config: ColBERTConfig, triples, queries=None, collection=None):
-    print(config)
 
     if config.resume:
         config.checkpoint = config.checkpoint or find_last_checkpoint(config.checkpoint_path_)
@@ -58,8 +56,7 @@ def train(config: ColBERTConfig, triples, queries=None, collection=None):
         # raise NotImplementedError()
 
     if not config.reranker:
-        # colbert = ColBERT(name=config.checkpoint, colbert_config=config)
-        colbert = ColBERTLiteQuery(name=config.checkpoint, colbert_config=config) # [replaced]
+        colbert = ColBERT(name=config.checkpoint, colbert_config=config)
     else:
         colbert = ElectraReranker.from_pretrained(config.checkpoint)
 
@@ -67,8 +64,11 @@ def train(config: ColBERTConfig, triples, queries=None, collection=None):
     colbert.train()
 
     ## [debug] check model arch and parameters
-    print(colbert)
-    print(sum(p.numel() for p in model.parameters()))
+    print("Model architecture:\n", colbert)
+    print("Model parameters: ", sum(p.numel() for p in colbert.parameters()))
+    trainable_params = filter(lambda p: p.requires_grad, colbert.parameters())
+    print("Trainable parameters: ", sum([np.prod(p.size()) for p in trainable_params]))
+
     colbert = torch.nn.parallel.DistributedDataParallel(colbert, device_ids=[config.rank],
                                                         output_device=config.rank,
                                                         find_unused_parameters=True)

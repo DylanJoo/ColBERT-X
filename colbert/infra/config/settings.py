@@ -7,6 +7,15 @@ from colbert.utils.utils import timestamp
 
 from .core_config import DefaultVal
 
+# [added class] [TODO] revise the default value after unit testing
+@dataclass
+class LiteSettings:
+    lite_query_encoder: bool = DefaultVal(False)
+    lite_document_encoder: bool = DefaultVal(False)
+    lite_num_hidden_layers: int = DefaultVal(-1)
+    lite_num_attention_heads: int = DefaultVal(-1)
+    lite_encoder_init: str = DefaultVal(None)
+    freeze_document_encoder: bool = DefaultVal(False)
 
 @dataclass
 class RunSettings:
@@ -125,14 +134,6 @@ class QuerySettings:
     query_maxlen: int = DefaultVal(32)
     attend_to_mask_tokens : bool = DefaultVal(False)
     interaction: str = DefaultVal('colbert')
-
-# [TODO] revise the default value after unit testing
-@dataclass
-class LiteSettings:
-    lite_query_encoder: bool = DefaultVal(False)
-    lite_document_encoder: bool = DefaultVal(False)
-    lite_num_hidden_layers: int = DefaultVal(-1)
-    lite_num_attention_heads: int = DefaultVal(-1)
 
 @dataclass
 class TrainingSettings:

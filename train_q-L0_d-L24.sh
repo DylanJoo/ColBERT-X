@@ -1,0 +1,13 @@
+python -m colbert.scripts.train \
+--model_name xlm-roberta-large \
+--training_triples /home/jju/datasets/hltcoe/t53b-monot5-msmarco-engeng.sample.jsonl \
+--training_irds_id neumarco/zh/train \
+--maxsteps 100 \
+--learning_rate 5e-6 \
+--kd_loss KLD \
+--only_top \
+--per_device_batch_size 8 \
+--nway 6 \
+--run_tag q-L0-xlm-roberta-large \
+--experiment colbert-lite-from-scratch \
+--other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=0 lite_num_attention_heads=16 lite_encoder_init=xlm-roberta-large
