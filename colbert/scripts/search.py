@@ -38,8 +38,11 @@ def main(args):
 
     with Run().context(RunConfig(nranks=args.n_gpus, root=args.root, experiment=args.experiment, index_root=args.index_root)):
         checkpoint = None
-        if args.checkpoint_root is not None:
-            checkpoint = args.checkpoint_root + "/" + ColBERTConfig.load_from_index( args.index_root + "/" + args.index_name ).checkpoint
+        # [modified] ColBERT-lite can have different query encoder instead of the shared one with doc's. I change it to checkpoint path
+        # if args.checkpoint_root is not None:
+        #     checkpoint = args.checkpoint_root + "/" + ColBERTConfig.load_from_index( args.index_root + "/" + args.index_name ).checkpoint
+        if args.checkpoint_path is not None:
+            checkpoint = args.checkpoint_path
         searcher = Searcher(index=args.index_name, checkpoint=checkpoint)
         searcher.config.configure(only_approx=args.only_approx, ignore_unrecognized=False)
         
@@ -66,7 +69,8 @@ if __name__ == '__main__':
     parser.add_argument('--centroid_score_threshold', help="threshold for centroid cell filter", type=float, default=0.4)
 
     parser.add_argument('--maxp', action='store_true', default=False)
-    parser.add_argument('--checkpoint_root', type=str, default=None)
+    # parser.add_argument('--checkpoint_root', type=str, default=None)
+    parser.add_argument('--checkpoint_path', type=str, default=None)
 
     parser.add_argument('--metrics', help="evalutation metrics used after search, should be parsable by ir_measures", 
                         type=str, nargs='*', default=[])

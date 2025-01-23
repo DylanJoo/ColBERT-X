@@ -8,6 +8,6 @@ python -m colbert.scripts.train \
 --only_top \
 --per_device_batch_size 8 \
 --nway 6 \
---run_tag compare \
---experiment colbert-lite \
---other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=0 lite_num_attention_heads=16 lite_encoder_init=hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng freeze_document_encoder=True
+--run_tag baseline \
+--experiment colbert-full \
+--other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=24 lite_num_attention_heads=16 lite_encoder_init=hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng freeze_document_encoder=True
