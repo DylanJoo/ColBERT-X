@@ -2,38 +2,27 @@
 #SBATCH --job-name=indexing
 #SBATCH --partition gpu
 #SBATCH --nodes=1
-#SBATCH --gpus-per-node=1
+#SBATCH --gres=gpu:2
 #SBATCH --ntasks-per-node=8
 #SBATCH --mem=64G
-#SBATCH --time=00:30:00
+#SBATCH --time=12:00:00
 #SBATCH --output=log/%x.out
 #SBATCH --error=log/%x.err
 
-. /home/jju/temp/miniconda3/etc/profile.d/conda.sh
+. /home/dju/miniconda3/etc/profile.d/conda.sh
 conda activate plaid
 
 cd ~/ColBERT-X
 
-checkpoint=experiments/colbert-lite/none/fromscratch/8bat.6way/checkpoints/colbert
+dataset=/home/dju/datasets/neuclir-csl/csl.tsv
+checkpoint=experiments/colbert-lite-q-L24/none/frozen/12bat.6way/checkpoints/colbert/
 for step in prepare encode finalize; do
 python -m colbert.scripts.index \
---coll_dir /home/jju/datasets/neuclir-csl/csl.tsv \
---index_name neuclir-csl \
---dataset_name test_coll \
+--coll_dir ${dataset} \
+--index_name neuclir-csl-test \
+--dataset_name neuclir-csl \
 --nbits 1 \
 --step $step \
 --checkpoint ${checkpoint} \
 --experiment test  
 done
-
-# checkpoint=experiments/colbert-lite/none/baseline/8bat.6way/checkpoints/colbert # this is the same as `hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng`
-# for step in prepare encode finalize; do
-# python -m colbert.scripts.index \
-# --coll_dir /home/jju/datasets/neuclir-csl/csl.tsv \
-# --index_name neuclir-csl \
-# --dataset_name test_coll \
-# --nbits 1 \
-# --step $step \
-# --checkpoint ${checkpoint} \
-# --experiment plaidx-zho  
-# done
