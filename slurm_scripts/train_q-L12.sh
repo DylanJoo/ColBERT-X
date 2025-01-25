@@ -1,0 +1,29 @@
+#!/bin/sh
+#SBATCH --job-name=l12
+#SBATCH --partition gpu
+#SBATCH --nodes=1
+#SBATCH --gpus-per-node=1
+#SBATCH --ntasks-per-node=8
+#SBATCH --mem=64G
+#SBATCH --time=02:00:00
+#SBATCH --output=log/%x.out
+#SBATCH --error=log/%x.err
+
+. /home/jju/temp/miniconda3/etc/profile.d/conda.sh
+conda activate plaid
+
+cd ~/ColBERT-X
+
+python -m colbert.scripts.train \
+--model_name hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng \
+--training_triples /home/jju/datasets/hltcoe/t53b-monot5-msmarco-engeng.jsonl \
+--training_irds_id neumarco/zh/train \
+--maxsteps 50000 \
+--learning_rate 5e-6 \
+--kd_loss KLD \
+--only_top \
+--per_device_batch_size 8 \
+--nway 6 \
+--run_tag frozen \
+--experiment colbert-lite-L12 \
+--other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=12 lite_num_attention_heads=16 lite_encoder_init=hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng freeze_document_encoder=True

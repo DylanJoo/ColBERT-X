@@ -109,9 +109,10 @@ class ColBERT(BaseColBERT):
         input_ids, attention_mask = input_ids.to(self.device), attention_mask.to(self.device)
         if self.colbert_config.lite_query_encoder:
             Q = self.bert_lite(input_ids, attention_mask=attention_mask)[0]
+            Q = self.linear_lite(Q)
         else:
             Q = self.bert(input_ids, attention_mask=attention_mask)[0]
-        Q = self.linear(Q)
+            Q = self.linear(Q)
 
         mask = torch.tensor(self.mask(input_ids, skiplist=[]), device=self.device).unsqueeze(2).float()
         Q = Q * mask
@@ -124,9 +125,10 @@ class ColBERT(BaseColBERT):
         input_ids, attention_mask = input_ids.to(self.device), attention_mask.to(self.device)
         if self.colbert_config.lite_document_encoder:
             D = self.bert_lite(input_ids, attention_mask=attention_mask)[0]
+            D = self.linear_lite(D)
         else:
             D = self.bert(input_ids, attention_mask=attention_mask)[0]
-        D = self.linear(D)
+            D = self.linear(D)
         mask = torch.tensor(self.mask(input_ids, skiplist=self.skiplist), device=self.device).unsqueeze(2).float()
         D = D * mask
 

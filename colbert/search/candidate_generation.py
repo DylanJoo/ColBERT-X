@@ -32,6 +32,7 @@ class CandidateGeneration:
         cells, scores = self.get_cells(Q, ncells)
 
         pids, cell_lengths = self.ivf.lookup(cells)
+        # print('pids', pids)
         if self.use_gpu:
             pids = pids.cuda()
         return pids, scores

@@ -31,7 +31,9 @@ class Searcher:
 
         self.checkpoint = checkpoint or self.index_config.checkpoint
         self.checkpoint_config = ColBERTConfig.load_from_checkpoint(self.checkpoint)
-        self.config = ColBERTConfig.from_existing(self.checkpoint_config, self.index_config, initial_config)
+        # [modified] Skpip the index config and initial config
+        # self.config = ColBERTConfig.from_existing(self.checkpoint_config, self.index_config, initial_config)
+        self.config = ColBERTConfig.from_existing(self.checkpoint_config)
         self.configure(checkpoint=self.checkpoint)
 
         if load_collection:
@@ -67,6 +69,8 @@ class Searcher:
         queries_ = list(queries.values())
 
         Q = self.encode(queries_)
+        # print('Q0', Q[0, :10, :10])
+        # print('Q1', Q[1, :10, :10])
 
         return self._search_all_Q(queries, Q, k, filter_fn=filter_fn)
 

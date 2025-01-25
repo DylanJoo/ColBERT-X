@@ -47,7 +47,10 @@ class BaseColBERT(torch.nn.Module):
         # [added]
         if self.colbert_config.freeze_document_encoder:
             for n, p in self.named_parameters():
-                if 'model_lite' not in n: # i.e., all have `model.xxx`
+                if 'model_lite' in n: # i.e., all have `model.xxx`
+                    p.requires_grad = True
+                    print(n)
+                else:
                     p.requires_grad = False
 
         # self.raw_tokenizer = AutoTokenizer.from_pretrained(name_or_path)
@@ -72,16 +75,30 @@ class BaseColBERT(torch.nn.Module):
         return self.model.linear
 
     @property
+    def linear_lite(self):
+        return self.model_lite.linear
+
+    @property
     def score_scaler(self):
         return self.model.score_scaler
 
     def save(self, path):
         assert not path.endswith('.dnn'), f"{path}: We reserve *.dnn names for the deprecated checkpoint format."
 
-        self.model.save_pretrained(path)
         self.raw_tokenizer.save_pretrained(path)
-
         self.colbert_config.save_for_checkpoint(path)
+
+        # [added]
+        if (self.colbert_config.lite_query_encoder and self.colbert_config.lite_document_encoder): 
+            self.model_lite.save_pretrained(path)
+        elif (self.colbert_config.lite_query_encoder != self.colbert_config.lite_document_encoder): 
+            self.model.save_pretrained(path)
+            path_lite = os.path.join(path, 'lite')
+            self.model_lite.save_pretrained(path_lite)
+            self.raw_tokenizer.save_pretrained(path_lite)
+            self.colbert_config.save_for_checkpoint(path_lite)
+        else: 
+            self.model.save_pretrained(path)
 
 if __name__ == '__main__':
     import random
