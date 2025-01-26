@@ -2,10 +2,10 @@
 #SBATCH --job-name=indexing
 #SBATCH --partition gpu
 #SBATCH --nodes=1
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:nvidia_rtx_a6000:1
 #SBATCH --ntasks-per-node=8
-#SBATCH --mem=64G
-#SBATCH --time=12:00:00
+#SBATCH --mem=32G
+#SBATCH --time=01:00:00
 #SBATCH --output=log/%x.out
 #SBATCH --error=log/%x.err
 
@@ -13,9 +13,11 @@
 conda activate plaid
 
 cd ~/ColBERT-X
+# Index with document encoder
 
 dataset=/home/dju/datasets/neuclir-csl/csl.tsv
-checkpoint=experiments/colbert-lite-q-L24/none/frozen/12bat.6way/checkpoints/colbert/
+checkpoint=experiments/colbert-lite-q-L24/none/baseline/12bat.6way/checkpoints/colbert/
+
 for step in prepare encode finalize; do
 python -m colbert.scripts.index \
 --coll_dir ${dataset} \
