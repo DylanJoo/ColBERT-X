@@ -25,13 +25,8 @@ class Checkpoint(ColBERT):
 
         self.amp_manager = MixedPrecisionManager(True)
 
-        # [added]
-        for n, p in self.named_parameters():
-            p.requires_grad = False
-
         # [debug]
         # print('linear weights', self.model_lite.linear.weight)
-        # print('LM weights', self.model_lite.LM.embeddings.word_embeddings.weight)
 
     def query(self, *args, to_cpu=False, **kw_args):
         with torch.no_grad():

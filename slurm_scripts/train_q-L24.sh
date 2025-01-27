@@ -27,7 +27,6 @@ python -m colbert.scripts.train \
 --maxsteps 100000 \
 --learning_rate 5e-6 \
 --kd_loss KLD \
---only_top \
 --per_device_batch_size 12 \
 --nway 6 \
 --run_tag fromscratch \

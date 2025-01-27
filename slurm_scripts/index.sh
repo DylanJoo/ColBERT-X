@@ -13,15 +13,15 @@
 conda activate plaid
 
 cd ~/ColBERT-X
-# Index with document encoder
 
 dataset=/home/dju/datasets/neuclir-csl/csl.tsv
-checkpoint=experiments/colbert-lite-q-L24/none/baseline/12bat.6way/checkpoints/colbert/
+# checkpoint=experiments/q-L0-xlm-roberta-large/none/frozen/16bat.6way/checkpoints/colbert
 
+rm -r experiments/test/indexes/neuclir-csl
 for step in prepare encode finalize; do
 python -m colbert.scripts.index \
 --coll_dir ${dataset} \
---index_name neuclir-csl-test \
+--index_name neuclir-csl \
 --dataset_name neuclir-csl \
 --nbits 1 \
 --step $step \

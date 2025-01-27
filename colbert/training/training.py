@@ -183,6 +183,7 @@ def train(config: ColBERTConfig, triples, queries=None, collection=None):
                 if len(target_scores) and not config.ignore_scores:
                     highest_avg, lowest_avg = scores.max(dim=-1).values.mean().item(), scores.min(dim=-1).values.mean().item()
                     print(f"#>>>   {highest_avg:.2f}, {lowest_avg:.2f} \t\t|\t\t {highest_avg-lowest_avg:.2f}")
+                    print(f"#>>>   {loss.item()} ")
                 else:
                     print_progress(scores)
 

@@ -69,8 +69,6 @@ class Searcher:
         queries_ = list(queries.values())
 
         Q = self.encode(queries_)
-        # print('Q0', Q[0, :10, :10])
-        # print('Q1', Q[1, :10, :10])
 
         return self._search_all_Q(queries, Q, k, filter_fn=filter_fn)
 

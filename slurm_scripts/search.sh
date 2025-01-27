@@ -14,31 +14,23 @@ conda activate plaid
 
 cd ~/ColBERT-X
 
-dataset=/home/dju/datasets/neuclir-csl/csl.tsv
 
 # [reproduce] load checkpoint from index
-# python -m colbert.scripts.search \
-# --index_name neuclir-csl \
-# --passage_mapping /home/jju/datasets/neuclir-csl/csl_mapping.tsv \
-# --query_file neuclir/neuclir-2023-technical_topics.0719.tsv  \
-# --metrics nDCG@20 MAP R@100 R@1000 Judged@10 \
-# --qrel neuclir/tech_final_qrels.txt  \
-# --experiment test
+# hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng: hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng {nDCG@20: 0.35747562328164084}
 
-checkpoint=experiments/colbert-lite-q-L24/none/baseline/12bat.6way/checkpoints/colbert/lite
+checkpoint=experiments/q-L0-xlm-roberta-large/none/frozen/16bat.6way/checkpoints/colbert/
+checkpoint=experiments/q-L12-xlm-roberta-large/none/frozen/12bat.6way/checkpoints/colbert/
+checkpoint=experiments/q-L0-plaidx/none/frozen/32bat.6way/checkpoints/colbert/
 python -m colbert.scripts.search \
---index_name neuclir-csl-test \
+--index_name neuclir-csl-plaidx \
 --checkpoint_path  ${checkpoint} \
 --passage_mapping /home/dju/datasets/neuclir-csl/csl_mapping.tsv \
 --query_file neuclir/neuclir-2023-technical_topics.0719.tsv  \
 --metrics nDCG@20 \
 --qrel neuclir/tech_final_qrels.txt  \
 --experiment test
-# [Baseline]
-# {nDCG@20: 0.021239207788448348}
-# {nDCG@20: 0.018698787642032057}
 
-# checkpoint=experiments/colbert-full/none/baseline/8bat.6way/checkpoints/colbert/lite
+# checkpoint=experiments/colbert-full/none/baseline/8bat.6way/checkpoints/colbert
 # python -m colbert.scripts.search \
 # --index_name neuclir-csl \
 # --checkpoint_path  ${checkpoint} \
