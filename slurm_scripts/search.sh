@@ -18,9 +18,9 @@ cd ~/ColBERT-X
 # [reproduce] load checkpoint from index
 # hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng: hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng {nDCG@20: 0.35747562328164084}
 
-checkpoint=experiments/q-L0-xlm-roberta-large/none/frozen/16bat.6way/checkpoints/colbert/
-checkpoint=experiments/q-L12-xlm-roberta-large/none/frozen/12bat.6way/checkpoints/colbert/
-checkpoint=experiments/q-L0-plaidx/none/frozen/32bat.6way/checkpoints/colbert/
+# [experiments] [frozen]
+checkpoint=experiments/q-L12-xlm-roberta-large/none/frozen/64bat.6way/checkpoints/colbert/
+checkpoint=experiments/q-L0-xlm-roberta-large/none/frozen/64bat.6way/checkpoints/colbert/
 python -m colbert.scripts.search \
 --index_name neuclir-csl-plaidx \
 --checkpoint_path  ${checkpoint} \
