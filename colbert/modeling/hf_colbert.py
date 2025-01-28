@@ -30,7 +30,9 @@ base_class_mapping={
     "bert-base-uncased": BertPreTrainedModel,
     "bert-large-uncased": BertPreTrainedModel,
     "microsoft/mdeberta-v3-base": DebertaV2PreTrainedModel,
-    "bert-base-multilingual-uncased": BertPreTrainedModel
+    "bert-base-multilingual-uncased": BertPreTrainedModel,
+    "sentence-transformers/all-MiniLM-L12-v2": BertPreTrainedModel,
+    "sentence-transformers/all-MiniLM-L6-v2": BertPreTrainedModel
 }
 
 model_object_mapping = {
@@ -44,7 +46,9 @@ model_object_mapping = {
     "bert-base-uncased": BertModel,
     "bert-large-uncased": BertModel,
     "microsoft/mdeberta-v3-base": DebertaV2Model,
-    "bert-base-multilingual-uncased": BertModel
+    "bert-base-multilingual-uncased": BertModel,
+    "sentence-transformers/all-MiniLM-L12-v2": BertModel,
+    "sentence-transformers/all-MiniLM-L6-v2": BertModel
 }
 
 

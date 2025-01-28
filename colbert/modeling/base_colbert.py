@@ -27,21 +27,24 @@ class BaseColBERT(torch.nn.Module):
         self.name = self.colbert_config.model_name
         assert self.name is not None
         HF_ColBERT = class_factory(self.name)
+        HF_ColBERT_lite = class_factory( (self.colbert_config.model_lite_name or self.name) )
 
-        if os.path.exists(os.path.join(name_or_path, 'lite')):
-            self.colbert_config.lite_encoder_init = None
+        # Dylan: you can not add this here as this will make the initialization always as same as `model`
+        # Dylan: move this to `checkpoint`
+        # if os.path.exists(os.path.join(name_or_path, 'lite')):
+        #     self.colbert_config.lite_encoder_init = None
 
         # [modified]
         # (1) Both are lite arch. (2) One for each. (3) Both are full arch.
         if (self.colbert_config.lite_query_encoder and self.colbert_config.lite_document_encoder): 
             self.model = None
-            self.model_lite = HF_ColBERT.from_pretrained(
+            self.model_lite = HF_ColBERT_lite.from_pretrained(
                 self.colbert_config.lite_encoder_init or os.path.join(name_or_path, 'lite'), 
                 colbert_config=self.colbert_config, lite_encoder=True
             )
         elif (self.colbert_config.lite_query_encoder != self.colbert_config.lite_document_encoder): 
             self.model = HF_ColBERT.from_pretrained(name_or_path, colbert_config=self.colbert_config)
-            self.model_lite = HF_ColBERT.from_pretrained(
+            self.model_lite = HF_ColBERT_lite.from_pretrained(
                 self.colbert_config.lite_encoder_init or os.path.join(name_or_path, 'lite'), 
                 colbert_config=self.colbert_config, lite_encoder=True
             )

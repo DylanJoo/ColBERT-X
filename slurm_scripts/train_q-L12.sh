@@ -34,5 +34,4 @@ python -m colbert.scripts.train \
 --other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=12 lite_num_attention_heads=16 lite_encoder_init=xlm-roberta-large freeze_document_encoder=True
 
 # some training spec regarding gpu memory
-# q: bat12 d: frozen --> 12474MiB
-# q: bat64 d: frozen --> MiB
+# q: bat64 d: frozen --> 15160MiB

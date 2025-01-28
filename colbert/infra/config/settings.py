@@ -16,6 +16,7 @@ class LiteSettings:
     lite_num_attention_heads: int = DefaultVal(-1)
     lite_encoder_init: str = DefaultVal(None)
     freeze_document_encoder: bool = DefaultVal(False)
+    model_lite_name: str = DefaultVal(None)
 
 @dataclass
 class RunSettings:
