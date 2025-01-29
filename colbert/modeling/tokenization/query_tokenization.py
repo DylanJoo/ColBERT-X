@@ -11,6 +11,12 @@ class QueryTokenizer():
         HF_ColBERT = class_factory(config.model_name)
         self.tok = HF_ColBERT.raw_tokenizer_from_pretrained(config.checkpoint, colbert_config=config)
 
+        if config.lite_query_encoder:
+            HF_ColBERT_lite = class_factory(config.model_lite_name or config.model_name)
+            self.tok = HF_ColBERT_lite.raw_tokenizer_from_pretrained(
+                (config.model_lite_name or config.model_name), colbert_config=config
+            )
+
         self.config = config
         self.query_maxlen = config.query_maxlen
         self.background_maxlen = 512 - self.query_maxlen + 1  # FIXME: Make this configurable

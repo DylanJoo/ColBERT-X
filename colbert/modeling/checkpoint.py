@@ -1,3 +1,4 @@
+import os
 import torch
 
 from tqdm import tqdm
@@ -17,8 +18,8 @@ class Checkpoint(ColBERT):
 
     def __init__(self, name, colbert_config=None):
 
-        if os.path.exists(os.path.join(name_or_path, 'lite')):
-            self.colbert_config.lite_encoder_init = None # as this is for inference
+        if os.path.exists(os.path.join(name, 'lite')):
+            colbert_config.lite_encoder_init = None # as this is for inference
 
         super().__init__(name, colbert_config)
         assert self.training is False

@@ -64,6 +64,11 @@ class BaseColBERT(torch.nn.Module):
         # self.raw_tokenizer = AutoTokenizer.from_pretrained(name_or_path)
         self.raw_tokenizer = HF_ColBERT.raw_tokenizer_from_pretrained(name_or_path, colbert_config=self.colbert_config)
 
+        if self.model_lite is not None:
+            self.raw_tokenizer_lite = HF_ColBERT_lite.raw_tokenizer_from_pretrained(
+                (self.colbert_config.model_lite_name or name_or_path), colbert_config=self.colbert_config
+            )
+
         self.eval()
 
     @property
@@ -93,20 +98,28 @@ class BaseColBERT(torch.nn.Module):
     def save(self, path):
         assert not path.endswith('.dnn'), f"{path}: We reserve *.dnn names for the deprecated checkpoint format."
 
-        self.raw_tokenizer.save_pretrained(path)
-        self.colbert_config.save_for_checkpoint(path)
+        # self.raw_tokenizer.save_pretrained(path)
+        # self.colbert_config.save_for_checkpoint(path)
 
         # [added]
         if (self.colbert_config.lite_query_encoder and self.colbert_config.lite_document_encoder): 
+            self.raw_tokenizer_lite.save_pretrained(path) 
             self.model_lite.save_pretrained(path)
+            self.colbert_config.save_for_checkpoint(path)
+
         elif (self.colbert_config.lite_query_encoder != self.colbert_config.lite_document_encoder): 
+            self.raw_tokenizer.save_pretrained(path)
             self.model.save_pretrained(path)
+            self.colbert_config.save_for_checkpoint(path)
+
             path_lite = os.path.join(path, 'lite')
+            self.raw_tokenizer_lite.save_pretrained(path_lite)
             self.model_lite.save_pretrained(path_lite)
-            self.raw_tokenizer.save_pretrained(path_lite)
-            self.colbert_config.save_for_checkpoint(path_lite)
+            self.colbert_config.save_for_checkpoint(path_lite) 
         else: 
+            self.raw_tokenizer.save_pretrained(path)
             self.model.save_pretrained(path)
+            self.colbert_config.save_for_checkpoint(path) 
 
 if __name__ == '__main__':
     import random

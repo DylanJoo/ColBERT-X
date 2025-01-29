@@ -28,6 +28,10 @@ class ColBERT(BaseColBERT):
                              for symbol in string.punctuation
                              for w in [symbol, self.raw_tokenizer.encode(symbol, add_special_tokens=False)[0]]}
         self.pad_token = self.raw_tokenizer.pad_token_id
+        if self.raw_tokenizer_lite:
+            self.pad_token_lite = self.raw_tokenizer_lite.pad_token_id
+        else:
+            self.pad_token_lite = self.pad_token
 
 
     @classmethod
@@ -114,7 +118,7 @@ class ColBERT(BaseColBERT):
             Q = self.bert(input_ids, attention_mask=attention_mask)[0]
             Q = self.linear(Q)
 
-        mask = torch.tensor(self.mask(input_ids, skiplist=[]), device=self.device).unsqueeze(2).float()
+        mask = torch.tensor(self.mask(input_ids, skiplist=[], pad_token=self.pad_token_lite), device=self.device).unsqueeze(2).float()
         Q = Q * mask
 
         return torch.nn.functional.normalize(Q, p=2, dim=2)
@@ -129,7 +133,7 @@ class ColBERT(BaseColBERT):
         else:
             D = self.bert(input_ids, attention_mask=attention_mask)[0]
             D = self.linear(D)
-        mask = torch.tensor(self.mask(input_ids, skiplist=self.skiplist), device=self.device).unsqueeze(2).float()
+        mask = torch.tensor(self.mask(input_ids, skiplist=self.skiplist, pad_token=self.pad_token), device=self.device).unsqueeze(2).float()
         D = D * mask
 
         D = torch.nn.functional.normalize(D, p=2, dim=2)
@@ -152,8 +156,8 @@ class ColBERT(BaseColBERT):
             return (-1.0 * ((Q.unsqueeze(2) - D_padded.unsqueeze(1))**2).sum(-1)).max(-1).values.sum(-1)
         return colbert_score(Q, D_padded, D_mask, config=self.colbert_config)
 
-    def mask(self, input_ids, skiplist):
-        mask = [[(x not in skiplist) and (x != self.pad_token) for x in d] for d in input_ids.cpu().tolist()]
+    def mask(self, input_ids, skiplist, pad_token):
+        mask = [[(x not in skiplist) and (x != pad_token) for x in d] for d in input_ids.cpu().tolist()]
         return mask
 
 

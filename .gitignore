@@ -27,3 +27,4 @@ __pycache__/
 *.trec
 log/*
 experiments
+*log

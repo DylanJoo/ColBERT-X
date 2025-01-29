@@ -12,6 +12,12 @@ class DocTokenizer():
         HF_ColBERT = class_factory(config.model_name)
         self.tok = HF_ColBERT.raw_tokenizer_from_pretrained(config.checkpoint, colbert_config=config)
 
+        if config.lite_document_encoder:
+            HF_ColBERT_lite = class_factory(config.model_lite_name or config.model_name)
+            self.tok = HF_ColBERT_lite.raw_tokenizer_from_pretrained(
+                (config.model_lite_name or config.model_name), colbert_config=config
+            )
+
         self.config = config
         self.doc_maxlen = config.doc_maxlen
 
