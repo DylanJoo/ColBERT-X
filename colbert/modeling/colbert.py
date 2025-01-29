@@ -28,7 +28,7 @@ class ColBERT(BaseColBERT):
                              for symbol in string.punctuation
                              for w in [symbol, self.raw_tokenizer.encode(symbol, add_special_tokens=False)[0]]}
         self.pad_token = self.raw_tokenizer.pad_token_id
-        if self.raw_tokenizer_lite:
+        if self.model_lite is not None:
             self.pad_token_lite = self.raw_tokenizer_lite.pad_token_id
         else:
             self.pad_token_lite = self.pad_token
@@ -132,7 +132,10 @@ class ColBERT(BaseColBERT):
             D = self.linear_lite(D)
         else:
             D = self.bert(input_ids, attention_mask=attention_mask)[0]
-            D = self.linear(D)
+            if self.colbert_config.shared_linear_lite:
+                D = self.linear_lite(D)
+            else:
+                D = self.linear(D)
         mask = torch.tensor(self.mask(input_ids, skiplist=self.skiplist, pad_token=self.pad_token), device=self.device).unsqueeze(2).float()
         D = D * mask
 

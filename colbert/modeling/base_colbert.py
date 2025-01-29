@@ -55,7 +55,7 @@ class BaseColBERT(torch.nn.Module):
         # [added]
         if self.colbert_config.freeze_document_encoder:
             for n, p in self.named_parameters():
-                if 'model_lite' in n: # i.e., all have `model.xxx`
+                if 'model_lite' in n:
                     p.requires_grad = True
                     print(n)
                 else:

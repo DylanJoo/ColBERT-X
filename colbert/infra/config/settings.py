@@ -17,6 +17,8 @@ class LiteSettings:
     lite_encoder_init: str = DefaultVal(None)
     freeze_document_encoder: bool = DefaultVal(False)
     model_lite_name: str = DefaultVal(None)
+    # testing
+    shared_linear_lite: bool = DefaultVal(False)
 
 @dataclass
 class RunSettings:

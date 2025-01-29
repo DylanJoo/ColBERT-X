@@ -24,7 +24,7 @@ python -m colbert.scripts.train \
 --model_name ${pretrained_base} \
 --training_triples ${dataset} \
 --training_irds_id neumarco/zh/train \
---maxsteps 200000 \
+--maxsteps 100000 \
 --learning_rate 5e-6 \
 --kd_loss KLD \
 --per_device_batch_size 64 \

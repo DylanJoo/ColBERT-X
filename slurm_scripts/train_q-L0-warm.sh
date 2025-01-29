@@ -24,7 +24,7 @@ python -m colbert.scripts.train \
 --model_name ${pretrained_base} \
 --training_triples ${dataset} \
 --training_irds_id neumarco/zh/train \
---maxsteps 200000 \
+--maxsteps 100000 \
 --learning_rate 5e-6 \
 --kd_loss KLD \
 --per_device_batch_size 64 \
@@ -34,4 +34,4 @@ python -m colbert.scripts.train \
 --other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=0 lite_num_attention_heads=16 lite_encoder_init=${pretrained_base} freeze_document_encoder=True
 
 # some training spec regarding gpu memory
-# q: bat64 d: frozen --> MiB
+# q: bat64 d: frozen --> 12058MiB

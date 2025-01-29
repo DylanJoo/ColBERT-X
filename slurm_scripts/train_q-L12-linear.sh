@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH --job-name=l12
+#SBATCH --job-name=l12-linear
 #SBATCH --partition gpu
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:nvidia_rtx_a6000:1
@@ -29,9 +29,9 @@ python -m colbert.scripts.train \
 --kd_loss KLD \
 --per_device_batch_size 64 \
 --nway 6 \
---run_tag frozen \
---experiment q-L12-xlm-roberta-large \
---other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=12 lite_num_attention_heads=16 lite_encoder_init=xlm-roberta-large freeze_document_encoder=True
+--run_tag sharedlinear \
+--experiment q-L12-plaidx \
+--other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=12 lite_num_attention_heads=16 lite_encoder_init=${pretrained_base} freeze_document_encoder=True shared_linear_lite=True
 
 # some training spec regarding gpu memory
-# q: bat64 d: frozen --> 15160MiB
+# q: bat64 d: frozen --> MiB
