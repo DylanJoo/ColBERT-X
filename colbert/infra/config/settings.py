@@ -10,6 +10,16 @@ from .core_config import DefaultVal
 # [added class] [TODO] revise the default value after unit testing
 @dataclass
 class LiteSettings:
+    """
+        lite_query_encoder: True if reducing LM's layers
+        lite_document_encoder: defualt as False as it only affect offline indexing time.
+        lite_num_hidden_layers: the number of LM's layers (reduced)
+        lite_num_attention_heads: default should depends on the LM used. e.g., XLM-roberta has 16 
+        lite_encoder_init: the initialized exisitng checkpoint for lite encoder.
+        freeze_document_encoder: True if freezing document encoder during training.
+        model_lite_name: the name (key) of model class for lite encoder, see `modeling/hf_colbert.py`
+        shared_linear_lite: True if sharing the linear layer (so replace document encoder's linear during training)
+    """
     lite_query_encoder: bool = DefaultVal(False)
     lite_document_encoder: bool = DefaultVal(False)
     lite_num_hidden_layers: int = DefaultVal(-1)
