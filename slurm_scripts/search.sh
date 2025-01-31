@@ -15,33 +15,33 @@ conda activate plaid
 cd ~/ColBERT-X
 
 
-# [reproduce] load checkpoint from index
-# hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng: hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng {nDCG@20: 0.35747562328164084}
+# [reproduce] [plaidx]
+# python -m colbert.scripts.search \
+# --index_name neuclir-csl-plaidx \
+# --passage_mapping /home/dju/datasets/neuclir-csl/csl_mapping.tsv \
+# --query_file neuclir/neuclir-2023-technical_topics.0719.tsv  \
+# --metrics nDCG@20 R@100 \
+# --qrel neuclir/tech_final_qrels.txt  \
+# --experiment test
 
 # [experiments] [frozen]
-# checkpoint=experiments/q-L12-xlm-roberta-large/none/frozen/64bat.6way/checkpoints/colbert/
-# checkpoint=experiments/q-L0-xlm-roberta-large/none/frozen/64bat.6way/checkpoints/colbert-50000/
-checkpoint=experiments/q-L0-plaid/none/frozen/64bat.6way/checkpoints/colbert-100000/
-# checkpoint=experiments/q-L0-minilm/none/frozen/64bat.6way/checkpoints/colbert/
+# checkpoint=experiments/q-L12-plaidx/none/frozen/64bat.24way/checkpoints/colbert
 python -m colbert.scripts.search \
 --index_name neuclir-csl-plaidx \
 --checkpoint_path  ${checkpoint} \
 --passage_mapping /home/dju/datasets/neuclir-csl/csl_mapping.tsv \
 --query_file neuclir/neuclir-2023-technical_topics.0719.tsv  \
---metrics nDCG@20 \
+--metrics nDCG@20 R@100 \
 --qrel neuclir/tech_final_qrels.txt  \
 --experiment test
 
-# checkpoint=experiments/colbert-full/none/baseline/8bat.6way/checkpoints/colbert
+# [experiments] [reindex -- shared linear + frozen doc LM]
+# checkpoint=experiments/q-L12-plaidx/none/sharedlinear/64bat.6way/checkpoints/colbert-100000
 # python -m colbert.scripts.search \
 # --index_name neuclir-csl \
 # --checkpoint_path  ${checkpoint} \
-# --passage_mapping /home/jju/datasets/neuclir-csl/csl_mapping.tsv \
+# --passage_mapping /home/dju/datasets/neuclir-csl/csl_mapping.tsv \
 # --query_file neuclir/neuclir-2023-technical_topics.0719.tsv  \
-# --metrics nDCG@20 \
+# --metrics nDCG@20 R@100 \
 # --qrel neuclir/tech_final_qrels.txt  \
-# --experiment plaidx-zho
-# [Baseline]
-# {nDCG@20: 0.1569494826603382}
-# {nDCG@20: 0.24299381072171614}
-
+# --experiment test
