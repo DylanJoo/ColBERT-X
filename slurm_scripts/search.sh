@@ -25,7 +25,7 @@ cd ~/ColBERT-X
 # --experiment test
 
 # [experiments] [frozen]
-# checkpoint=experiments/q-L12-plaidx/none/frozen/64bat.24way/checkpoints/colbert
+checkpoint=experiments/q-L12-plaidx/none/frozen/128bat.6way/checkpoints/colbert
 python -m colbert.scripts.search \
 --index_name neuclir-csl-plaidx \
 --checkpoint_path  ${checkpoint} \

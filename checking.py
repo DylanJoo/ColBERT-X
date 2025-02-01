@@ -53,12 +53,27 @@ from transformers import AutoConfig
 
 ## DEBUG4: check the shared-learned linear layer is working
 ## >> the output are the same
-baseline = 'hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng'
-config = ColBERTConfig.load_from_checkpoint(baseline)
-checkpoint = Checkpoint(baseline, colbert_config=config)
-print('linear', checkpoint.model.linear.weight)
+# baseline = 'hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng'
+# config = ColBERTConfig.load_from_checkpoint(baseline)
+# checkpoint = Checkpoint(baseline, colbert_config=config)
+# print('linear', checkpoint.model.linear.weight)
+#
+# baseline = 'experiments/q-L12-plaidx/none/sharedlinear/64bat.6way/checkpoints/colbert/'
+# config = ColBERTConfig.load_from_checkpoint(baseline)
+# checkpoint = Checkpoint(baseline, colbert_config=config)
+# print('linear', checkpoint.model_lite.linear.weight)
 
-baseline = 'experiments/q-L12-plaidx/none/sharedlinear/64bat.6way/checkpoints/colbert/'
-config = ColBERTConfig.load_from_checkpoint(baseline)
-checkpoint = Checkpoint(baseline, colbert_config=config)
-print('linear', checkpoint.model_lite.linear.weight)
+## DEBUG5: check static embedding can be loaded with hfcolbert
+from colbert.modeling.colbert import ColBERT
+baseline = 'hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng'
+config = ColBERTConfig(
+    lite_query_encoder=True,
+    lite_document_encoder=False,
+    lite_encoder_init='DylanJHJ/glove.6B.300d',
+    model_lite_name='DylanJHJ/glove.6B.300d',
+    lite_num_hidden_layers=12,
+    lite_num_attention_heads=12,
+)
+colbert = ColBERT(baseline, colbert_config=config)
+print(colbert)
+print(colbert.model_lite.static_embs.static_embs.embeddings.weight)
