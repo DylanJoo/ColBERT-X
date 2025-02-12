@@ -24,10 +24,10 @@ cd ~/ColBERT-X
 # --qrel neuclir/tech_final_qrels.txt  \
 # --experiment test
 
-# [experiments] [frozen]
-checkpoint=experiments/q-L12-plaidx/none/frozen/128bat.6way/checkpoints/colbert
+# [experiments] [reindex -- shared linear + frozen doc LM]
+checkpoint=experiments/frozen_plaidx/none/q-L1-d-L24/128bat.6way/checkpoints/colbert-50000
 python -m colbert.scripts.search \
---index_name neuclir-csl-plaidx \
+--index_name neuclir-csl \
 --checkpoint_path  ${checkpoint} \
 --passage_mapping /home/dju/datasets/neuclir-csl/csl_mapping.tsv \
 --query_file neuclir/neuclir-2023-technical_topics.0719.tsv  \
@@ -35,10 +35,10 @@ python -m colbert.scripts.search \
 --qrel neuclir/tech_final_qrels.txt  \
 --experiment test
 
-# [experiments] [reindex -- shared linear + frozen doc LM]
-# checkpoint=experiments/q-L12-plaidx/none/sharedlinear/64bat.6way/checkpoints/colbert-100000
+# [experiments] [frozen]
+# checkpoint=experiments/q-L12-plaidx/none/frozen/128bat.6way/checkpoints/colbert
 # python -m colbert.scripts.search \
-# --index_name neuclir-csl \
+# --index_name neuclir-csl-plaidx \
 # --checkpoint_path  ${checkpoint} \
 # --passage_mapping /home/dju/datasets/neuclir-csl/csl_mapping.tsv \
 # --query_file neuclir/neuclir-2023-technical_topics.0719.tsv  \

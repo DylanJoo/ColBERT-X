@@ -52,14 +52,23 @@ class BaseColBERT(torch.nn.Module):
             self.model = HF_ColBERT.from_pretrained(name_or_path, colbert_config=self.colbert_config)
             self.model_lite = None
 
+        print('model', self.model)
+        print('model_lite', self.model_lite)
+
         # [added]
         if self.colbert_config.freeze_document_encoder:
             for n, p in self.named_parameters():
                 if 'model_lite' in n:
                     p.requires_grad = True
-                    print(n)
+                    print(n, 'activated')
                 else:
                     p.requires_grad = False
+
+        if self.colbert_config.freeze_query_word_embeddings:
+            for n, p in self.named_parameters():
+                if ('embeddings' in n) and ('model_lite' in n):
+                    p.requires_grad = False
+                    print(n, 'deactivated')
 
         # self.raw_tokenizer = AutoTokenizer.from_pretrained(name_or_path)
         self.raw_tokenizer = HF_ColBERT.raw_tokenizer_from_pretrained(name_or_path, colbert_config=self.colbert_config)
@@ -86,6 +95,10 @@ class BaseColBERT(torch.nn.Module):
     @property
     def linear(self):
         return self.model.linear
+
+    @property
+    def bridge(self):
+        return self.model_lite.bridge
 
     @property
     def linear_lite(self):

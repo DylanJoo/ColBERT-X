@@ -23,6 +23,15 @@ def sampling_on_beta(items, nway: int, step: int, max_step: int, max_beta: float
     idx = np.random.choice(len(items), size=nway, replace=False, p=samp_dist)
     return [ items[i] for i in idx ]
 
+# def sampling_on_beta(items, nway: int, step: int, max_step: int, max_beta: float):
+#     # factor = max_beta
+#     factor = 0.9
+#     idx = np.arange(len(items))
+#     probs = beta.pdf((idx + 1) / (len(items) + 1), factor, factor)
+#     probs /= probs.sum()
+#     idx = np.random.choice(idx, size=nway, replace=False, p=probs)
+#     
+#     return [ items[i] for i in idx ]
 
 class LazyBatcher():
     def __init__(self, config: ColBERTConfig, triples, queries=None, collection=None, rank=0, nranks=1):
@@ -61,7 +70,7 @@ class LazyBatcher():
         # Curriculum Learning for Dense Retrieval Distillation: Zeng, Zamani, Vinay
         query, *passages = self.triples[ idx % len(self.triples) ]
         if self.shuffle_pasages:
-            if self.sampling_max_beta > 1:
+            if self.sampling_max_beta != 1:
                 return [ 
                     query, 
                     *sampling_on_beta(

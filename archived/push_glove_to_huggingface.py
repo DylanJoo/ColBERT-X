@@ -39,6 +39,8 @@ def get_whitespace_tokenizer(dir):
     vocab["[unused1]"] = len(vocab) 
     vocab["[Q]"] = len(vocab) 
     vocab["[D]"] = len(vocab) 
+    vocab["[CLS]"] = len(vocab) 
+    vocab["[SEP]"] = len(vocab) 
 
     tokenizer = Tokenizer(WordLevel(vocab, unk_token="[UNK]"))
     tokenizer.pre_tokenizer = Whitespace()
@@ -46,6 +48,8 @@ def get_whitespace_tokenizer(dir):
     # Wrap it with Hugging Face tokenizer
     hf_tokenizer = PreTrainedTokenizerFast(
         tokenizer_object=tokenizer,
+        cls_token="[CLS]",
+        sep_token="[SEP]",
         pad_token="PADDING_TOKEN",
         mask_token="[MASK]"
     )
@@ -62,39 +66,39 @@ tokenizer = get_whitespace_tokenizer('glove.6B.300d')
 tokenizer.push_to_hub(repo_id='glove.6B.300d')
 
 # push models
-# embedding_matrix = torch.load("glove.6B.300d/0_WordEmbeddings/pytorch_model.bin", map_location="cpu")['emb_layer.weight']
-# print(len(tokenizer))
-# print(embedding_matrix.shape)
-# v, d = embedding_matrix.shape
-# initializer_range = 0.02 
-# embedding_matrix = torch.cat(
-#     [embedding_matrix, (torch.rand(len(tokenizer)-v, d) * 2 - 1) * initializer_range], 
-#     dim=0
-# )
-# print(embedding_matrix.shape)
-# torch.save({
-#     "embeddings.weight": torch.tensor(embedding_matrix),
-#     "projection.weight": None,
-#     "projection.bias": None,
-# }, "glove.6B.300d/0_WordEmbeddings/new_model.pt")
-#
-# api = HfApi()
-# api.upload_file(
-#     path_or_fileobj="glove.6B.300d/0_WordEmbeddings/new_model.pt",
-#     path_in_repo="pytorch_model.bin",
-#     repo_id="DylanJHJ/glove.6B.300d",
-#     repo_type="model"
-# )
-# file_path = cached_file("DylanJHJ/glove.6B.300d", "pytorch_model.bin")
-# embedding_matrix = load(file_path)
-# print(embedding_matrix['embeddings.weight'].shape)
+embedding_matrix = torch.load("glove.6B.300d/0_WordEmbeddings/pytorch_model.bin", map_location="cpu")['emb_layer.weight']
+print(len(tokenizer))
+print(embedding_matrix.shape)
+v, d = embedding_matrix.shape
+initializer_range = 0.02 
+embedding_matrix = torch.cat(
+    [embedding_matrix, (torch.rand(len(tokenizer)-v, d) * 2 - 1) * initializer_range], 
+    dim=0
+)
+print(embedding_matrix.shape)
+torch.save({
+    "embeddings.weight": torch.tensor(embedding_matrix),
+    "projection.weight": None,
+    "projection.bias": None,
+}, "glove.6B.300d/0_WordEmbeddings/new_model.pt")
 
-from colbert.modeling.glove import StaticEmbedding
-from colbert.infra.config import ColBERTConfig
-baseline = 'hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng'
-config = ColBERTConfig.load_from_checkpoint(baseline)
-model = StaticEmbedding.from_pretrained('DylanJHJ/glove.6B.300d', colbert_config=config)
-model.save_pretrained('glove.6B.300d3')
-model = StaticEmbedding.from_pretrained('glove.6B.300d3', colbert_config=config)
-print(model)
+api = HfApi()
+api.upload_file(
+    path_or_fileobj="glove.6B.300d/0_WordEmbeddings/new_model.pt",
+    path_in_repo="pytorch_model.bin",
+    repo_id="DylanJHJ/glove.6B.300d",
+    repo_type="model"
+)
+file_path = cached_file("DylanJHJ/glove.6B.300d", "pytorch_model.bin")
+embedding_matrix = load(file_path)
+print(embedding_matrix['embeddings.weight'].shape)
+
+# from colbert.modeling.glove import StaticEmbedding
+# from colbert.infra.config import ColBERTConfig
+# baseline = 'hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng'
+# config = ColBERTConfig.load_from_checkpoint(baseline)
+# model = StaticEmbedding.from_pretrained('DylanJHJ/glove.6B.300d', colbert_config=config)
+# model.save_pretrained('glove.6B.300d3')
+# model = StaticEmbedding.from_pretrained('glove.6B.300d3', colbert_config=config)
+# print(model)
 

@@ -1,11 +1,11 @@
 #!/bin/sh
-#SBATCH --job-name=l0
+#SBATCH --job-name=l0-glove
 #SBATCH --partition gpu
 #SBATCH --nodes=1
-#SBATCH --gres=gpu:nvidia_titan_v:4
+#SBATCH --gres=gpu:tesla_p40:4
 #SBATCH --ntasks-per-node=8
 #SBATCH --mem=192G
-#SBATCH --time=48:00:00
+#SBATCH --time=72:00:00
 #SBATCH --output=log/%x.out
 #SBATCH --error=log/%x.err
 
@@ -17,8 +17,7 @@ cd ~/ColBERT-X
 # Train from scratch
 
 dataset=/home/dju/datasets/hltcoe/t53b-monot5-msmarco-engeng.jsonl
-# pretrained_base=xlm-roberta-large
-pretrained_base=hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng
+pretrained_base=xlm-roberta-large
 
 python -m colbert.scripts.train \
 --model_name ${pretrained_base} \
@@ -27,11 +26,8 @@ python -m colbert.scripts.train \
 --maxsteps 50000 \
 --learning_rate 5e-5 \
 --kd_loss KLD \
---per_device_batch_size 96 \
+--per_device_batch_size 8 \
 --nway 6 \
 --run_tag frozen \
---experiment q-L0-plaidx \
---other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=0 lite_num_attention_heads=16 lite_encoder_init=${pretrained_base} freeze_document_encoder=True shared_linear_lite=True do_normalization=True
-
-# some training spec regarding gpu memory
-# q: bat512 d: frozen --> 41484MiB
+--experiment q-L0-glove \
+--other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=0 lite_encoder_init=DylanJHJ/glove.6B.300d model_lite_name=DylanJHJ/glove.6B.300d freeze_document_encoder=True shared_linear_lite=True freeze_query_word_embeddings=True do_normalization=False lite_hidden_size=1024 weight_decay=0

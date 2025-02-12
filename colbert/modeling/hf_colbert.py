@@ -2,6 +2,7 @@ import importlib
 from unicodedata import name
 import torch.nn as nn
 import transformers
+from collections import OrderedDict
 from transformers import BertPreTrainedModel, BertModel, AutoTokenizer, AutoModel, AutoConfig
 from transformers import RobertaModel, RobertaPreTrainedModel
 from transformers import XLMRobertaModel, XLMRobertaConfig
@@ -9,6 +10,8 @@ from transformers import ElectraModel, ElectraPreTrainedModel
 from transformers import DebertaV2Model, DebertaV2PreTrainedModel
 from colbert.utils.utils import torch_load_dnn, print_message
 from colbert.infra import ColBERTConfig
+from colbert.modeling.glove import Glove, StaticEmbedding
+from colbert.modeling.minilm import MiniLM
 
 class XLMRobertaPreTrainedModel(RobertaPreTrainedModel):
     """
@@ -31,8 +34,9 @@ base_class_mapping={
     "bert-large-uncased": BertPreTrainedModel,
     "microsoft/mdeberta-v3-base": DebertaV2PreTrainedModel,
     "bert-base-multilingual-uncased": BertPreTrainedModel,
-    "sentence-transformers/all-MiniLM-L12-v2": BertPreTrainedModel,
-    "sentence-transformers/all-MiniLM-L6-v2": BertPreTrainedModel
+    "DylanJHJ/glove.6B.300d": StaticEmbedding,
+    "sentence-transformers/all-MiniLM-L6-v2": BertPreTrainedModel,
+    "sentence-transformers/all-MiniLM-L12-v2": BertPreTrainedModel
 }
 
 model_object_mapping = {
@@ -47,8 +51,9 @@ model_object_mapping = {
     "bert-large-uncased": BertModel,
     "microsoft/mdeberta-v3-base": DebertaV2Model,
     "bert-base-multilingual-uncased": BertModel,
-    "sentence-transformers/all-MiniLM-L12-v2": BertModel,
-    "sentence-transformers/all-MiniLM-L6-v2": BertModel
+    "DylanJHJ/glove.6B.300d": Glove,
+    "sentence-transformers/all-MiniLM-L6-v2": BertModel,
+    "sentence-transformers/all-MiniLM-L12-v2": BertModel
 }
 
 
@@ -63,27 +68,41 @@ def find_class_names(model_type, class_type):
     return None
 
 
+# [modified]
+# [TODO] Adapt the try-exception
 def class_factory(name_or_path):
-    loadedConfig  = AutoConfig.from_pretrained(name_or_path)
-    model_type = loadedConfig.model_type
+    try:
+        loadedConfig  = AutoConfig.from_pretrained(name_or_path)
+        model_type = loadedConfig.model_type
+    except:
+        model_type = "customized_model_type"
     pretrained_class = find_class_names(model_type, 'pretrainedmodel')
     model_class = find_class_names(model_type, 'model')
 
-    if pretrained_class is not None:
-        pretrained_class_object = getattr(transformers, pretrained_class)
-    elif model_type == 'xlm-roberta':
+    # if pretrained_class is not None:
+    #     pretrained_class_object = getattr(transformers, pretrained_class)
+    # elif model_type == 'xlm-roberta':
+    #     pretrained_class_object = XLMRobertaPreTrainedModel
+    # elif base_class_mapping.get(name_or_path) is not None:
+    #     pretrained_class_object = base_class_mapping.get(name_or_path)
+    # else:
+    #     raise ValueError(f"Could not find correct pretrained class for the model type {model_type} in transformers library")
+    # [modified] load the predefined class first
+    if model_type == 'xlm-roberta':
         pretrained_class_object = XLMRobertaPreTrainedModel
     elif base_class_mapping.get(name_or_path) is not None:
         pretrained_class_object = base_class_mapping.get(name_or_path)
+    elif pretrained_class is not None:
+        pretrained_class_object = getattr(transformers, pretrained_class)
     else:
-        raise ValueError("Could not find correct pretrained class for the model type {model_type} in transformers library")
+        raise ValueError(f"Could not find correct pretrained class for the model type {model_type} in transformers library")
 
     if model_class != None:
         model_class_object = getattr(transformers, model_class)
     elif model_object_mapping.get(name_or_path) is not None:
         model_class_object = model_object_mapping.get(name_or_path)
     else:
-        raise ValueError("Could not find correct model class for the model type {model_type} in transformers library")
+        raise ValueError(f"Could not find correct model class for the model type {model_type} in transformers library")
 
 
     # [modified]
@@ -100,12 +119,19 @@ def class_factory(name_or_path):
             if lite_encoder:
                 config.num_hidden_layers = colbert_config.lite_num_hidden_layers
                 config.num_attention_heads = colbert_config.lite_num_attention_heads
+                config._name_or_path = (colbert_config.lite_encoder_init or config._name_or_path)
+                # config.hidden_size = colbert_config.lite_hidden_size
 
-            super().__init__(config)
-
+            super().__init__(config, colbert_config)
             self.config = config
             self.dim = colbert_config.dim
-            self.linear = nn.Linear(config.hidden_size, colbert_config.dim, bias=False)
+            if config.hidden_size != colbert_config.lite_hidden_size:
+                self.bridge = nn.Linear(config.hidden_size, colbert_config.lite_hidden_size, bias=False)
+                self.linear = nn.Linear(colbert_config.lite_hidden_size, colbert_config.dim, bias=False)
+            else:
+                self.bridge = nn.Identity()
+                self.linear = nn.Linear(config.hidden_size, colbert_config.dim, bias=False)
+
             setattr(self,self.base_model_prefix, model_class_object(config))
 
             # if colbert_config.relu:
@@ -145,7 +171,7 @@ def class_factory(name_or_path):
 
                 return obj
 
-            obj = super().from_pretrained(name_or_path, colbert_config=colbert_config, lite_encoder=lite_encoder)
+            obj = super().from_pretrained(name_or_path, colbert_config, lite_encoder=lite_encoder)
             obj.base = name_or_path
 
             tok = cls.raw_tokenizer_from_pretrained(name_or_path, colbert_config)

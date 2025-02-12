@@ -113,6 +113,7 @@ class ColBERT(BaseColBERT):
         input_ids, attention_mask = input_ids.to(self.device), attention_mask.to(self.device)
         if self.colbert_config.lite_query_encoder:
             Q = self.bert_lite(input_ids, attention_mask=attention_mask)[0]
+            Q = self.bridge(Q)
             Q = self.linear_lite(Q)
         else:
             Q = self.bert(input_ids, attention_mask=attention_mask)[0]
@@ -121,7 +122,10 @@ class ColBERT(BaseColBERT):
         mask = torch.tensor(self.mask(input_ids, skiplist=[], pad_token=self.pad_token_lite), device=self.device).unsqueeze(2).float()
         Q = Q * mask
 
-        return torch.nn.functional.normalize(Q, p=2, dim=2)
+        if self.colbert_config.do_normalization:
+            return torch.nn.functional.normalize(Q, p=2, dim=2)
+        else:
+            return Q
 
     def doc(self, input_ids, attention_mask, keep_dims=True):
         assert keep_dims in [True, False, 'return_mask']
@@ -139,7 +143,8 @@ class ColBERT(BaseColBERT):
         mask = torch.tensor(self.mask(input_ids, skiplist=self.skiplist, pad_token=self.pad_token), device=self.device).unsqueeze(2).float()
         D = D * mask
 
-        D = torch.nn.functional.normalize(D, p=2, dim=2)
+        if self.colbert_config.do_normalization:
+            D = torch.nn.functional.normalize(D, p=2, dim=2)
         if self.use_gpu:
             D = D.half()
 

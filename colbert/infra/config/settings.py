@@ -17,7 +17,7 @@ class LiteSettings:
         lite_num_attention_heads: default should depends on the LM used. e.g., XLM-roberta has 16 
         lite_encoder_init: the initialized exisitng checkpoint for lite encoder.
         freeze_document_encoder: True if freezing document encoder during training.
-        model_lite_name: the name (key) of model class for lite encoder, see `modeling/hf_colbert.py`
+        model_lite_name: the name (key) of model class for lite encoder, see `modeling/base_colbert.py`. But maybe this is not necess.
         shared_linear_lite: True if sharing the linear layer (so replace document encoder's linear during training)
     """
     lite_query_encoder: bool = DefaultVal(False)
@@ -27,8 +27,11 @@ class LiteSettings:
     lite_encoder_init: str = DefaultVal(None)
     freeze_document_encoder: bool = DefaultVal(False)
     model_lite_name: str = DefaultVal(None)
-    # testing
     shared_linear_lite: bool = DefaultVal(False)
+    lite_hidden_size: int = DefaultVal(1024)
+    do_normalization: bool = DefaultVal(True)
+    freeze_query_word_embeddings: bool = DefaultVal(False)
+    weight_decay: float = DefaultVal(0.01)
 
 @dataclass
 class RunSettings:

@@ -58,15 +58,20 @@ class QueryTokenizer():
         assert type(batch_text) in [list, tuple], (type(batch_text))
 
         # add placehold for the [Q] marker
-        batch_text = ['. ' + x for x in batch_text]
-
+        if 'glove' in self.tok.name_or_path:
+            batch_text = ['PADDING_TOKEN ' + x.lower() for x in batch_text]
+        else:
+            batch_text = ['. ' + x for x in batch_text]
         obj = self.tok(batch_text, padding='max_length', truncation=True,
                        return_tensors='pt', max_length=self.query_maxlen)
 
         ids, mask = obj['input_ids'], obj['attention_mask']
 
         # postprocess for the [Q] marker and the [MASK] augmentation
-        ids[:, 1] = self.Q_marker_token_id
+        if 'glove' in self.tok.name_or_path:
+            pass
+        else:
+            ids[:, 1] = self.Q_marker_token_id
         ids[ids == self.pad_token_id] = self.mask_token_id
 
         if context is not None:

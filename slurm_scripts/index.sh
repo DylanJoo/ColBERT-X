@@ -15,7 +15,7 @@ conda activate plaid
 cd ~/ColBERT-X
 
 dataset=/home/dju/datasets/neuclir-csl/csl.tsv
-checkpoint=experiments/q-L12-plaidx/none/sharedlinear/64bat.6way/checkpoints/colbert-100000
+checkpoint=experiments/frozen_plaidx/none/q-L1-d-L24/128bat.6way/checkpoints/colbert-50000
 
 # rm -r experiments/test/indexes/neuclir-csl
 for step in prepare encode finalize; do

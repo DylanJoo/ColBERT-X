@@ -36,6 +36,10 @@ def plot(df, name='NA'):
     # Labels and title
     plt.xlabel("Step")
     plt.ylabel("Loss")
+    plt.ylim(0.125, 0.4)
+    plt.axhline(y=0.214, color='b', linestyle='-', linewidth=1)
+    plt.axhline(y=0.181, color='r', linestyle='-', linewidth=1)
+
     plt.title(f"Loss Over Steps - {name}")
 
     # Show the plot

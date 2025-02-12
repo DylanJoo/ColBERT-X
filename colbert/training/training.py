@@ -73,7 +73,7 @@ def train(config: ColBERTConfig, triples, queries=None, collection=None):
                                                         output_device=config.rank,
                                                         find_unused_parameters=True)
 
-    optimizer = AdamW(filter(lambda p: p.requires_grad, colbert.parameters()), lr=config.lr, eps=1e-8)
+    optimizer = AdamW(filter(lambda p: p.requires_grad, colbert.parameters()), lr=config.lr, eps=1e-8, weight_decay=config.weight_decay)
     optimizer.zero_grad()
 
     scheduler = None
@@ -122,6 +122,8 @@ def train(config: ColBERTConfig, triples, queries=None, collection=None):
 
                 if config.use_ib_negatives:
                     scores, ib_loss = scores
+                else:
+                    ib_loss = 0
 
                 scores = scores.view(-1, config.nway)
 
