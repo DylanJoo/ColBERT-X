@@ -25,7 +25,7 @@ cd ~/ColBERT-X
 # --experiment test
 
 # [experiments] [reindex -- shared linear + frozen doc LM]
-checkpoint=experiments/frozen_plaidx/none/q-L1-d-L24/128bat.6way/checkpoints/colbert-50000
+checkpoint=experiments/q-L6-minilm/none/frozen/384bat.6way/checkpoints/colbert-20000
 python -m colbert.scripts.search \
 --index_name neuclir-csl \
 --checkpoint_path  ${checkpoint} \

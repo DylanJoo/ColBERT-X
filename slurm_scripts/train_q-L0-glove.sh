@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH --job-name=l0-glove
+#SBATCH --job-name=l0-glove-cos
 #SBATCH --partition gpu
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:tesla_p40:4
@@ -30,4 +30,4 @@ python -m colbert.scripts.train \
 --nway 6 \
 --run_tag frozen \
 --experiment q-L0-glove \
---other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=0 lite_encoder_init=DylanJHJ/glove.6B.300d model_lite_name=DylanJHJ/glove.6B.300d freeze_document_encoder=True shared_linear_lite=True freeze_query_word_embeddings=True do_normalization=False lite_hidden_size=1024 weight_decay=0
+--other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=0 lite_encoder_init=DylanJHJ/glove.6B.300d model_lite_name=DylanJHJ/glove.6B.300d freeze_document_encoder=False shared_linear_lite=True freeze_query_word_embeddings=True do_normalization=True lite_hidden_size=1024 weight_decay=0

@@ -2,9 +2,9 @@
 #SBATCH --job-name=l1
 #SBATCH --partition gpu
 #SBATCH --nodes=1
-#SBATCH --gres=gpu:nvidia_titan_v:2
+#SBATCH --gres=gpu:nvidia_rtx_a6000:1
 #SBATCH --ntasks-per-node=8
-#SBATCH --mem=96G
+#SBATCH --mem=48G
 #SBATCH --time=48:00:00
 #SBATCH --output=log/%x.out
 #SBATCH --error=log/%x.err
@@ -24,14 +24,12 @@ python -m colbert.scripts.train \
 --model_name ${pretrained_base} \
 --training_triples ${dataset} \
 --training_irds_id neumarco/zh/train \
---maxsteps 50000 \
---learning_rate 5e-6 \
+--maxsteps 10000 \
+--learning_rate 5e-5 \
 --kd_loss KLD \
---per_device_batch_size 64 \
+--per_device_batch_size 384 \
 --nway 6 \
---run_tag q-L1-d-L24 \
---experiment frozen_plaidx \
---other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=1 lite_num_attention_heads=16 lite_encoder_init=${pretrained_base} freeze_document_encoder=True shared_linear_lite=True
+--run_tag frozen \
+--experiment q-L1-plaidx \
+--other_args lite_query_encoder=True lite_document_encoder=False lite_num_hidden_layers=1 lite_num_attention_heads=16 lite_encoder_init=${pretrained_base} freeze_document_encoder=True shared_linear_lite=True weight_decay=0
 
-# some training spec regarding gpu memory
-# q: bat512 d: frozen --> 41484MiB

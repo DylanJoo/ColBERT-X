@@ -65,7 +65,11 @@ def train(config: ColBERTConfig, triples, queries=None, collection=None):
 
     ## [debug] check model arch and parameters
     print("Model architecture:\n", colbert)
-    print("Model parameters: ", sum(p.numel() for p in colbert.parameters()))
+    print("Model parameters (model): ", sum(p.numel() for p in colbert.model.parameters()))
+    try:
+        print("Model parameters (model_lite): ", sum(p.numel() for p in colbert.model_lite.parameters()))
+    except:
+        print("No model_lite")
     trainable_params = filter(lambda p: p.requires_grad, colbert.parameters())
     print("Trainable parameters: ", sum([np.prod(p.size()) for p in trainable_params]))
 

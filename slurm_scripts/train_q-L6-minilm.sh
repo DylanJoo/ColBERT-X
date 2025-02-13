@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH --job-name=l6-minilm
+#SBATCH --job-name=l6-minilm-raw
 #SBATCH --partition gpu
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:nvidia_rtx_a6000:1
@@ -17,8 +17,8 @@ cd ~/ColBERT-X
 # Train from scratch
 
 dataset=/home/dju/datasets/hltcoe/t53b-monot5-msmarco-engeng.jsonl
-# pretrained_base=xlm-roberta-large
-pretrained_base=hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng
+pretrained_base=xlm-roberta-large
+# pretrained_base=hltcoe/plaidx-large-zho-tdist-mt5xxl-engeng
 
 python -m colbert.scripts.train \
 --model_name ${pretrained_base} \
